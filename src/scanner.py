@@ -1,3 +1,4 @@
+import ipaddress
 import socket
 
 
@@ -25,4 +26,30 @@ def _calculate_checksum(data: bytes) -> int: ...
 def _get_local_ip(dst_ip: str) -> str: ...
 
 
-def _resolve_and_validate_target(targer: str, resolver=socket.gethostbyname) -> str: ...
+def _resolve_and_validate_target(target: str, resolver=socket.gethostbyname) -> str:
+    target = target.strip()
+
+    if not target:
+        raise ValueError("Target host was empty")
+
+    try:
+        ip = ipaddress.ip_address(target)
+
+        if ip.version == 6:
+            raise ValueError("IPv6 is not supported")
+
+        return ip.exploded
+
+    except ValueError as e:
+        if "IPv6 is not supported" in str(e):
+            raise
+
+        try:
+            ip = resolver(target)
+            ip = ipaddress.ip_address(ip)
+            if ip.version == 6:
+                raise ValueError("IPv6 is not supported")
+            return ip.exploded
+
+        except Exception:
+            raise ValueError(f"Failed to resolve hostname or invalid IP: '{target}'")
