@@ -1,6 +1,6 @@
 import pytest
 
-from src.scanner import _resolve_and_validate_target
+from src.scanner import _resolve_and_validate_target, _is_valid_port
 
 
 def failing_dns(hostname):
@@ -69,6 +69,3 @@ def test_resolve_correct_domains(domain, expected):
 def test_raises_exception_when_incorrect_domain(domain):
     with pytest.raises(ValueError):
         _resolve_and_validate_target(domain, resolver=failing_dns)
-
-
-def test_is_valid_port(port, expected): ...
