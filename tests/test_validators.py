@@ -31,6 +31,7 @@ def test_resolve_correct_ipv4_formats(ip, expected):
         ("-1.10.10.23"),
         ("192.168.1"),
         ("abc.def.ghi.jkl"),
+        ("2001:DB8::A1B2"),
     ],
 )
 def test_raises_exception_when_incorrect_ip(ip):
