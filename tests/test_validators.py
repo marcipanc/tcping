@@ -1,6 +1,6 @@
 import pytest
 
-from src.scanner import _resolve_and_validate_target, _is_valid_port
+from src.scanner import _resolve_and_validate_target
 
 
 def failing_dns(hostname):
