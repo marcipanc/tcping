@@ -1,6 +1,8 @@
 import ipaddress
 import socket
 
+from itertools import zip_longest
+
 
 def scan(ip: str, port: int, timeout: int): ...
 
@@ -21,20 +23,13 @@ def _build_pseudo_header(src_ip: str, dst_ip: str, tcp_len: int) -> bytes: ...
 
 
 def _checksum16(data: bytes) -> int:
-    sum = 0
-    is_high_byte = True
+    total = 0
 
-    for byte in data:
-        if is_high_byte:
-            byte <<= 8
+    for hi, lo in zip_longest(data[0::2], data[1::2], fillvalue=0):
+        total += (hi << 8) + lo
+        total = (total & 0xFFFF) + (total >> 16)
 
-        sum += byte
-
-        is_high_byte = not is_high_byte
-
-        sum = (sum & 0xFFFF) + (sum >> 16)
-
-    return ~sum & 0xFFFF
+    return ~total & 0xFFFF
 
 
 def _get_local_ip(dst_ip: str) -> str: ...
