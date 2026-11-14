@@ -20,7 +20,21 @@ def _build_tcp_header(
 def _build_pseudo_header(src_ip: str, dst_ip: str, tcp_len: int) -> bytes: ...
 
 
-def _checksum16(data: bytes) -> int: ...
+def _checksum16(data: bytes) -> int:
+    sum = 0
+    is_high_byte = True
+
+    for byte in data:
+        if is_high_byte:
+            byte <<= 8
+
+        sum += byte
+
+        is_high_byte = not is_high_byte
+
+        sum = (sum & 0xFFFF) + (sum >> 16)
+
+    return ~sum & 0xFFFF
 
 
 def _get_local_ip(dst_ip: str) -> str: ...
