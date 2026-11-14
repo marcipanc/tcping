@@ -32,7 +32,21 @@ def _checksum16(data: bytes) -> int:
     return ~total & 0xFFFF
 
 
-def _get_local_ip(dst_ip: str) -> str: ...
+def _get_local_ip(dst_ip: str) -> str:
+    if dst_ip == "127.0.0.1":
+        return "127.0.0.1"
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    try:
+        s.connect((dst_ip, 1))
+        return s.getsockname()[0]
+
+    except OSError:
+        return "127.0.0.1"
+
+    finally:
+        s.close()
 
 
 def _resolve_and_validate_target(target: str, resolver=socket.gethostbyname) -> str:
